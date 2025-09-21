@@ -7,13 +7,15 @@ import express from'express'
 const Chat_router = express.Router();
 
 
-
+//Configuration for Gemini AI
 const GENERATION_CONFIG = {
-    temperature: 0.9,
-    topK: 1,
-    topP: 1,
-    maxOutputTokens: 4096,
+    temperature: 0.9, // Increased temperature for more creative responses
+    topK: 1,  // Keeping topK at 1 for more focused responses
+    topP: 1, // Keeping topP at 1 for more focused responses
+    maxOutputTokens: 4096, // Increased to handle larger responses
 };
+
+//Safety settings to avoid harmful content
 const SAFETY_SETTINGS = [
     { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE },
     { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE },
@@ -24,9 +26,12 @@ const SAFETY_SETTINGS = [
 Chat_router.post("/ask" ,async(req,res)=>{
   
     try {
+
+        //Connecting to the Gemini AI
         const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
         const model = genAI.getGenerativeModel({ model: process.env.MODEL_NAME });
-
+        
+        //Starting the chat session
         const chat = model.startChat({
             generationConfig: GENERATION_CONFIG,
             safetySettings: SAFETY_SETTINGS,
@@ -43,6 +48,7 @@ Chat_router.post("/ask" ,async(req,res)=>{
              })
         }
 
+        //Sending the user question to the chat
         const result = await chat.sendMessage(question);
 
         if(result.error){
