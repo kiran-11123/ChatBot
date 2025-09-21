@@ -35,6 +35,36 @@ Favourite_Router.post("/add" , Authenticate_token , async(req,res)=>{
 })
 
 
+Favourite_Router.get("/show" , Authenticate_token , async(req,res)=>{
+       
+    try{
+
+        const userId = req.user.user_id;
+
+        const All_data = await favourites.find({user_id:userId});
+
+        if(All_data.length===0){
+              
+            return res.status(400).json({
+                message:"No Favourites Available",
+                data:All_data
+            })
+        }
+
+        return res.status(200).json({
+            message:"Data Feteched Successfully..",
+            data:All_data
+        })
+
+    }
+    catch(er){
+         return res.status(500).json({
+            message:"Internal Server Error",
+            error:er
+         })
+    }
+})
+
 
 
 
