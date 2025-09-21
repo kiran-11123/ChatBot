@@ -65,8 +65,7 @@ Chat_router.post("/ask" ,async(req,res)=>{
 
         
     } catch (error) {
-        spinner.stop();
-        console.error(chalk.red('An error occurred:'), error.message);
+        console.error(error.message);
         process.exit(1);
     }
 });
