@@ -53,7 +53,8 @@ Chat_router.post("/ask" ,async(req,res)=>{
 
         return res.status(200).json({
             message:"Output Fetched successfully...",
-            data:result.response.text()
+            data:result.response.text(),
+            all_data:result.response
         })
 
         
