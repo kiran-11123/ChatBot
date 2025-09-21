@@ -2,12 +2,12 @@ import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 
 dotenv.config();
-const secret = process.env.SECRET_KEY;
+const secret = process.env.JWT_SECRET_KEY;
 
 const Authenticate_token = (req, res, next) => {
   const token = req.cookies?.token;
   console.log("Cookies:", req.cookies);
-console.log("Token:", token);
+  console.log("Token:", token);
 
 
   if (!token) {
@@ -16,7 +16,7 @@ console.log("Token:", token);
 
   try {
     const decoded = jwt.verify(token, secret);
-    req.user = decoded; 
+    req.user = decoded;
     next();
   } catch (err) {
     return res.status(403).json({ message: "Invalid token" });

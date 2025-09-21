@@ -18,7 +18,7 @@ Auth_Router.post("/signin",async(req,res)=>{
 
         const {email , password} = req.body;
 
-        const email_check = await prisma.findUnique({
+        const email_check = await prisma.user.findUnique({
             where:{
                 email,
             }
@@ -30,7 +30,7 @@ Auth_Router.post("/signin",async(req,res)=>{
              })
         }
 
-        const password_check = await bcrypt.compare(email_check.password , password);
+       const password_check = await bcrypt.compare(password, email_check.password);
 
         if(!password_check){
              return res.status(400).json({
@@ -56,6 +56,8 @@ Auth_Router.post("/signin",async(req,res)=>{
 
     }
     catch(er){
+
+        console.log(er);
           
         return res.status(500).json({
             message:"Internal Server Error",
@@ -65,7 +67,7 @@ Auth_Router.post("/signin",async(req,res)=>{
 })
 
 
-Auth_Router.post("signup" , async(req,res)=>{
+Auth_Router.post("/signup" , async(req,res)=>{
        
     try{
 
@@ -96,7 +98,7 @@ Auth_Router.post("signup" , async(req,res)=>{
         const encode_password  = await bcrypt.hash(password,10);
 
         const user_data = await prisma.user.create({
-            date:{
+            data:{
                 username:username,
                 email:email,
                 password :encode_password
@@ -111,6 +113,7 @@ Auth_Router.post("signup" , async(req,res)=>{
 
     }
     catch(er){
+        console.log(er);
          return res.status(500).json({
             message:"Internal Server Error",
             error:er
