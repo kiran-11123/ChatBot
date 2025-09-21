@@ -1,20 +1,18 @@
 import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from "@google/generative-ai";
-import chalk from 'chalk';
-import ora from 'ora';
-import prompt from 'prompt-sync';
+
 import dotenv from "dotenv";
 dotenv.config();
 import express from'express'
 
 const Chat_router = express.Router();
 
-const promptSync = prompt();
+
 
 const GENERATION_CONFIG = {
     temperature: 0.9,
     topK: 1,
     topP: 1,
-    maxOutputTokens: 2048,
+    maxOutputTokens: 4096,
 };
 const SAFETY_SETTINGS = [
     { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE },
@@ -24,7 +22,7 @@ const SAFETY_SETTINGS = [
 ];
 
 Chat_router.post("/ask" ,async(req,res)=>{
-    const spinner = ora('Initializing chat...').start();
+  
     try {
         const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
         const model = genAI.getGenerativeModel({ model: process.env.MODEL_NAME });
@@ -35,7 +33,7 @@ Chat_router.post("/ask" ,async(req,res)=>{
             history: [],
         });
 
-        spinner.stop();
+  
 
        
         const question = req.body.question;
