@@ -1,8 +1,10 @@
 import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from "@google/generative-ai";
+import History from "../mongodb/ChatHistory.js";
 
 import dotenv from "dotenv";
 dotenv.config();
-import express from'express'
+import express, { response } from'express'
+import Authenticate_token from "../middleware/Authentication_token.js";
 
 const Chat_router = express.Router();
 
@@ -23,9 +25,11 @@ const SAFETY_SETTINGS = [
     { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE },
 ];
 
-Chat_router.post("/ask" ,async(req,res)=>{
+Chat_router.post("/ask" ,Authenticate_token  , async(req,res)=>{
   
     try {
+
+        const userId = req.user.user_id;
 
         //Connecting to the Gemini AI
         const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
@@ -56,6 +60,36 @@ Chat_router.post("/ask" ,async(req,res)=>{
                 message:result.error.message
             })
         }
+
+        if(result.response.text()){
+
+            try{
+
+            const answer = result.response.text();
+
+             const newEntry = { question , answer };
+
+       
+             const userHistory = await History.findOne({ user_id: userId });
+
+        if (userHistory) {
+            // Append the new Q&A to existing history
+               userHistory.history.push(newEntry);
+               await userHistory.save();
+         } else {
+            // If no history exists, create a new document
+            await History.create({ user_id: userId, history: [newEntry] });
+          }
+
+          console.log("Data added into the user history...")
+
+        }
+
+        catch(er){
+            console.log(er);
+        }
+
+    }
 
         return res.status(200).json({
             message:"Output Fetched successfully...",
