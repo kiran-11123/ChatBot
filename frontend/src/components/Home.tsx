@@ -1,12 +1,36 @@
 import React from 'react';
 import { FaRegUserCircle } from 'react-icons/fa';// Assuming this is imported
 import { AiOutlineSend } from 'react-icons/ai';
+import { useState } from 'react';
 
 function ChatLayout() {
 
-  async function sendRequest(){
-        
-  }
+    const [message, setMessage] = useState('');
+    const [isFocused, setIsFocused] = useState(false);
+
+async function sendRequest() {
+
+  
+  
+}
+
+
+
+
+  const handleSend = () => {
+    if (message.trim()) {
+      sendRequest();
+      setMessage('');
+    }
+  };
+  const handleKeyPress = (e:any) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  };
+
+
   return (
     <div className="flex flex-col min-h-screen w-full px-2 py-2 bg-gray-200 text-black">
       {/* Header */}
@@ -36,20 +60,39 @@ function ChatLayout() {
       </div>
 
      
-      <div className="w-[800px] mx-auto h-24  rounded-xl flex items-center justify-center">
-        <input
-          type="text"
+       <div className="w-full max-w-[800px] mx-auto mt-4">
+      <div className={`flex items-end gap-2 p-3 bg-gray-100 rounded-xl border border-gray-300 transition-all duration-200 ${
+        isFocused ? 'ring-2 ring-blue-500' : '' 
+     }`}>
+        {/* Textarea for multiline input, like ChatGPT */}
+        <textarea
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
           placeholder="Type your message here..."
-          className="w-full max-w-xl h-10  px-4 py-2 rounded-lg outline-none"
+          className="flex-1 min-h-[40px] max-h-[150px] resize-none bg-transparent outline-none text-gray-900 placeholder-gray-500 leading-relaxed"
+          rows={1}
+          onKeyPress={handleKeyPress}
         />
         
-        <div className='bg-gray-300 px-3 py-2 rounded-lg h-10 flex'>
-          <button onClick={sendRequest}><AiOutlineSend className='w-7 h-7  rounded-md text-center '/><span className='hidden'>hi</span></button>
-         </div> 
-        
-        
+        {/* Send Button - Integrated on the right, subtle like ChatGPT */}
+        <button
+          onClick={handleSend}
+          disabled={!message.trim()}
+          className={`flex items-center justify-center w-10 h-10 rounded-full transition-all duration-200 ${
+            message.trim()
+              ? 'bg-blue-500 hover:bg-blue-600 text-white shadow-md'
+              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+          }`}
 
+        >
+          <span className='hidden'>hi</span>
+          <AiOutlineSend className="w-5 h-5" />
+        </button>
       </div>
+    </div>
+
     </div>
   );
 }
