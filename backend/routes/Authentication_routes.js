@@ -16,7 +16,8 @@ Auth_Router.post("/signin",async(req,res)=>{
 
     try{
 
-        const {email , password} = req.body;
+        const email = req.body.email;
+        const password = req.body.Password;
 
         const email_check = await prisma.user.findUnique({
             where:{
@@ -30,7 +31,12 @@ Auth_Router.post("/signin",async(req,res)=>{
              })
         }
 
+        if (!password) {
+           return res.status(400).json({ message: "Password is required" });
+        }
+
        const password_check = await bcrypt.compare(password, email_check.password);
+
 
         if(!password_check){
              return res.status(400).json({
