@@ -2,13 +2,33 @@ import React from 'react';
 import { FaRegUserCircle } from 'react-icons/fa';// Assuming this is imported
 import { AiOutlineSend } from 'react-icons/ai';
 import { useState } from 'react';
+import axios from 'axios';
 
-function ChatLayout() {
+function Home() {
 
     const [message, setMessage] = useState('');
     const [isFocused, setIsFocused] = useState(false);
+    const [question , setquestion]  = useState('');
+    const [uploadQuestion , setUploadQuestion] = useState('');
+    const [response,setResponse] = useState('');
 
 async function sendRequest() {
+
+  
+  setUploadQuestion(question);
+  const response = await  axios.post("http://localhost:3000/chat/ask" ,{question} , {
+    withCredentials:true
+  })
+
+  if(response.status===200){
+
+    setResponse(response.data.answer);
+
+       
+  }
+  else{
+      window.alert(response.data.message);
+  }
 
   
   
@@ -17,18 +37,6 @@ async function sendRequest() {
 
 
 
-  const handleSend = () => {
-    if (message.trim()) {
-      sendRequest();
-      setMessage('');
-    }
-  };
-  const handleKeyPress = (e:any) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
-    }
-  };
 
 
   return (
@@ -47,12 +55,12 @@ async function sendRequest() {
         <div className="flex flex-col space-y-4 overflow-auto">
           <div className="flex justify-start">
             <div className="bg-blue-100 rounded-lg px-3 py-2 max-w-xs">
-              <p>Hello! How can I help you today?</p>
+              <p>{uploadQuestion}</p>
             </div>
           </div>
           <div className="flex justify-end">
             <div className="bg-green-100 rounded-lg px-3 py-2 max-w-xs">
-              <p>Hi there!</p>
+              <p>{response}</p>
             </div>
           </div>
           {/* Add more messages here as needed */}
@@ -67,18 +75,18 @@ async function sendRequest() {
         {/* Textarea for multiline input, like ChatGPT */}
         <textarea
           value={message}
-          onChange={(e) => setMessage(e.target.value)}
+          onChange={(e) => setquestion(e.target.value)}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
           placeholder="Type your message here..."
           className="flex-1 min-h-[40px] max-h-[150px] resize-none bg-transparent outline-none text-gray-900 placeholder-gray-500 leading-relaxed"
           rows={1}
-          onKeyPress={handleKeyPress}
+         
         />
         
         {/* Send Button - Integrated on the right, subtle like ChatGPT */}
         <button
-          onClick={handleSend}
+          onClick={sendRequest}
           disabled={!message.trim()}
           className={`flex items-center justify-center w-10 h-10 rounded-full transition-all duration-200 ${
             message.trim()
@@ -97,4 +105,4 @@ async function sendRequest() {
   );
 }
 
-export default ChatLayout;
+export default Home;
